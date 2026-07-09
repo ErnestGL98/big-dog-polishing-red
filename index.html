@@ -106,6 +106,36 @@
     .cta p  { color: rgba(255,255,255,0.85); font-family: "Segoe UI", sans-serif; font-weight: 400; margin-bottom: 20px; }
     .cta .btn-ghost { border-color: var(--white); }
 
+    /* ---- CONTACT FORM (inside the CTA strip) ------------------
+       Small email box + larger message box + send button.
+       Not wired to send yet — visual only for now. */
+    .contact-form { margin-top: 22px; text-align: left; }
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      font-family: "Segoe UI", sans-serif;
+      font-size: 15px;
+      color: var(--charcoal);
+      background: var(--white);
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    /* The bigger message box; user can drag it taller if they want */
+    .contact-form textarea { min-height: 130px; resize: vertical; }
+    /* Placeholder (grey hint) text inside the boxes */
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder { color: #9aa0a6; }
+    /* Gold highlight when a box is clicked into, for accessibility */
+    .contact-form input:focus,
+    .contact-form textarea:focus { outline: 2px solid var(--gold); }
+    /* The send button reuses the ghost-button look */
+    .contact-form .btn-send {
+      width: 100%; margin-top: 2px; cursor: pointer;
+      font-family: inherit;
+    }
+
     /* ---- FOOTER ----------------------------------------------- */
     footer {
       text-align: center; padding: 32px 24px;
@@ -161,7 +191,14 @@
       <div class="label" style="color:#fff;">Ready When You Are</div>
       <h2>Let's Make It Shine</h2>
       <p>Get a free, no-pressure quote today.</p>
-      <a class="btn btn-ghost" href="tel:0000000000">Call Big Dog</a>
+
+      <!-- Contact form. onsubmit="return false" just stops the page
+           from reloading — it's not wired to actually send yet. -->
+      <form class="contact-form" onsubmit="return false;">
+        <input type="email" placeholder="Your email" aria-label="Your email" />
+        <textarea placeholder="Tell us what you need polished..." aria-label="Your message"></textarea>
+        <button type="submit" class="btn btn-ghost btn-send">Send</button>
+      </form>
     </div>
   </section>
 
