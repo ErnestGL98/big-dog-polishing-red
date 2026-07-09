@@ -26,6 +26,16 @@
     /* ---- RESET: make every browser start from the same place -- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* Smooth-glide the page when a button jumps to a section,
+       instead of instantly snapping to it. */
+    html { scroll-behavior: smooth; }
+    /* Keeps the sticky top bar from covering the section we land on */
+    #services, #contact { scroll-margin-top: 72px; }
+    /* Respect visitors who prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
     body {
       font-family: "Arial Black", "Segoe UI", sans-serif;
       background: var(--charcoal);
