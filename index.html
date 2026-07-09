@@ -82,6 +82,96 @@
     .btn-primary { background: var(--red); color: var(--white); }
     .btn-ghost   { background: transparent; color: var(--white); border: 1px solid var(--steel); }
 
+    /* ---- BUTTON HOVER: float up + metallic edge shine ---------
+       On hover the button lifts slightly and a band of "light"
+       sweeps around the EDGES only (like chrome catching light),
+       then settles. Applies to every button, incl. Call Now. */
+
+    /* Lets us animate the angle of the conic-gradient below */
+    @property --shine-angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+
+    .btn, header .call {
+      position: relative;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    /* The little float + a soft shadow so it reads as "lifted" */
+    .btn:hover, header .call:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    }
+    /* The moving light. It's a full ring, but the mask below hides
+       the middle so ONLY the 2px edge shows. */
+    .btn::before, header .call::before {
+      content: "";
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      padding: 2px;                 /* thickness of the shine ring */
+      /* TWO light bands, 180deg apart, so one rides the top and one
+         the bottom — settling into opposite corners. */
+      background: conic-gradient(from var(--shine-angle),
+        transparent            0deg,
+        transparent           30deg,
+        rgba(255,255,255,0.2) 43deg,
+        var(--gold)           50deg,
+        #ffffff               57deg,
+        var(--steel)          64deg,
+        rgba(255,255,255,0.2) 71deg,
+        transparent           90deg,
+        transparent          210deg,   /* second band = first + 180deg */
+        rgba(255,255,255,0.2) 223deg,
+        var(--gold)          230deg,
+        #ffffff              237deg,
+        var(--steel)         244deg,
+        rgba(255,255,255,0.2) 251deg,
+        transparent          270deg,
+        transparent          360deg);
+      /* Keep the ring, cut out the face (two masks, one excluded) */
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+              mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      opacity: 0;                   /* hidden until hover */
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    /* Big (wide) buttons need steeper angles than the near-square
+       Call Now button to land on their corners, so they get their
+       own gradient — glints rest on the TOP-RIGHT and BOTTOM-LEFT. */
+    .btn::before {
+      background: conic-gradient(from var(--shine-angle),
+        transparent            0deg,
+        transparent           55deg,
+        rgba(255,255,255,0.2)  69deg,
+        var(--gold)            76deg,
+        #ffffff                83deg,   /* rests on top-right corner */
+        var(--steel)           90deg,
+        rgba(255,255,255,0.2)  97deg,
+        transparent           111deg,
+        transparent           235deg,
+        rgba(255,255,255,0.2) 249deg,
+        var(--gold)           256deg,
+        #ffffff               263deg,   /* rests on bottom-left corner */
+        var(--steel)          270deg,
+        rgba(255,255,255,0.2) 277deg,
+        transparent           291deg,
+        transparent           360deg);
+    }
+    /* Reveal the ring and sweep the light around once, then hold */
+    .btn:hover::before, header .call:hover::before {
+      opacity: 1;
+      animation: edge-shine .7s ease-out forwards;
+    }
+    @keyframes edge-shine {
+      from { --shine-angle: 0deg; }
+      to   { --shine-angle: 360deg; }
+    }
+    /* Turn the motion off for anyone who prefers reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .btn, header .call { transition: none; }
+      .btn:hover, header .call:hover { transform: none; }
+      .btn:hover::before, header .call:hover::before { animation: none; }
+    }
+
     /* ---- SERVICES --------------------------------------------- */
     section { padding: 44px 0; }
     .label {
