@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!-- ============================================================
+     BIG DOG POLISHING — Design A ("Red Steel")
+     Mobile-first landing page. Bold, minimal, aggressive.
+     Palette pulled from Logo 1: charcoal, red, steel, gold.
+     ============================================================ -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- This line makes the page scale correctly on phones -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Big Dog Polishing</title>
+
+  <style>
+    /* ---- COLOR THEME (from Logo 1) ---------------------------
+       Change any color here and it updates across the whole page. */
+    :root {
+      --charcoal:   #1a1c1f;   /* near-black background   */
+      --charcoal-2: #26292e;   /* slightly lighter panels */
+      --steel:      #8a9099;   /* brushed-metal grey      */
+      --red:        #d81f26;   /* the collar red — accent */
+      --gold:       #d9c56a;   /* fang gold — small touch */
+      --white:      #f4f5f6;
+    }
+
+    /* ---- RESET: make every browser start from the same place -- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Arial Black", "Segoe UI", sans-serif;
+      background: var(--charcoal);
+      color: var(--white);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Keeps content centered and readable on wide screens too */
+    .wrap { width: 100%; max-width: 480px; margin: 0 auto; padding: 0 24px; }
+
+    /* ---- TOP BAR ---------------------------------------------- */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--charcoal-2);
+      position: sticky; top: 0;
+      background: rgba(26,28,31,0.9);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+    header .brand { font-size: 15px; letter-spacing: 1px; text-transform: uppercase; }
+    header .brand span { color: var(--red); }
+    header .call {
+      font-size: 13px; text-decoration: none; color: var(--white);
+      border: 1px solid var(--steel); padding: 8px 14px; border-radius: 999px;
+    }
+
+    /* ---- HERO (the big first screen) -------------------------- */
+    .hero { text-align: center; padding: 48px 0 40px; }
+    .hero img {
+      width: 220px; height: auto;
+      filter: drop-shadow(0 10px 30px rgba(216,31,38,0.35));
+    }
+    .hero h1 {
+      font-size: 40px; line-height: 1.05; text-transform: uppercase;
+      margin-top: 24px; letter-spacing: -0.5px;
+    }
+    .hero h1 span { color: var(--red); display: block; }
+    .hero p {
+      color: var(--steel); font-family: "Segoe UI", sans-serif;
+      font-weight: 400; font-size: 16px; margin-top: 16px;
+    }
+
+    /* Red accent line used as a divider */
+    .accent { width: 48px; height: 4px; background: var(--red); margin: 24px auto; border-radius: 2px; }
+
+    /* ---- BUTTONS ---------------------------------------------- */
+    .btn {
+      display: block; text-align: center; text-decoration: none;
+      padding: 16px; border-radius: 10px; font-size: 15px;
+      text-transform: uppercase; letter-spacing: 1px; margin-top: 14px;
+    }
+    .btn-primary { background: var(--red); color: var(--white); }
+    .btn-ghost   { background: transparent; color: var(--white); border: 1px solid var(--steel); }
+
+    /* ---- SERVICES --------------------------------------------- */
+    section { padding: 44px 0; }
+    .label {
+      font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--red); text-align: center; margin-bottom: 8px;
+      font-family: "Segoe UI", sans-serif; font-weight: 700;
+    }
+    h2 {
+      font-size: 26px; text-transform: uppercase; text-align: center;
+      margin-bottom: 28px;
+    }
+    .card {
+      background: var(--charcoal-2); border-radius: 14px; padding: 22px;
+      margin-bottom: 14px; border-left: 3px solid var(--red);
+    }
+    .card h3 { font-size: 18px; text-transform: uppercase; margin-bottom: 6px; }
+    .card p  { color: var(--steel); font-family: "Segoe UI", sans-serif; font-weight: 400; font-size: 14px; }
+
+    /* ---- CALL-TO-ACTION STRIP --------------------------------- */
+    .cta { background: var(--red); text-align: center; }
+    .cta h2 { color: var(--white); }
+    .cta p  { color: rgba(255,255,255,0.85); font-family: "Segoe UI", sans-serif; font-weight: 400; margin-bottom: 20px; }
+    .cta .btn-ghost { border-color: var(--white); }
+
+    /* ---- FOOTER ----------------------------------------------- */
+    footer {
+      text-align: center; padding: 32px 24px;
+      color: var(--steel); font-size: 12px;
+      font-family: "Segoe UI", sans-serif; font-weight: 400;
+      border-top: 1px solid var(--charcoal-2);
+    }
+    footer strong { color: var(--white); }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <header>
+    <div class="brand">Big<span>Dog</span></div>
+    <a class="call" href="tel:0000000000">Call Now</a>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero wrap">
+    <!-- Logo 1 lives in the images folder as logo.webp -->
+    <img src="images/logo.webp" alt="Big Dog Polishing logo" />
+    <h1>Big Dog<span>Polishing</span></h1>
+    <p>Mirror-finish metal polishing for big rigs — and anything else that needs to shine.</p>
+    <div class="accent"></div>
+    <a class="btn btn-primary" href="#contact">Get a Free Quote</a>
+    <a class="btn btn-ghost" href="#services">See What We Do</a>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services" class="wrap">
+    <div class="label">What We Do</div>
+    <h2>Our Services</h2>
+
+    <div class="card">
+      <h3>Big Rig Polishing</h3>
+      <p>Tanks, wheels, bumpers, and fuel tanks brought back to a full mirror shine.</p>
+    </div>
+    <div class="card">
+      <h3>Aluminum & Chrome</h3>
+      <p>Deep cut, buff, and finish on all aluminum and chrome surfaces.</p>
+    </div>
+    <div class="card">
+      <h3>Custom Jobs</h3>
+      <p>If it's metal and it needs to shine, we polish it. Just ask.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="contact" class="cta">
+    <div class="wrap">
+      <div class="label" style="color:#fff;">Ready When You Are</div>
+      <h2>Let's Make It Shine</h2>
+      <p>Get a free, no-pressure quote today.</p>
+      <a class="btn btn-ghost" href="tel:0000000000">Call Big Dog</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <strong>Big Dog Polishing</strong><br />
+    Serving drivers &amp; fleets everywhere.<br /><br />
+    &copy; 2026 Big Dog Polishing
+  </footer>
+
+</body>
+</html>
