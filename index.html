@@ -148,9 +148,14 @@
       width: 220px; height: auto;
       filter: drop-shadow(0 10px 30px rgba(216,31,38,0.35));
       /* Stops browsers (Edge) overlaying visual-search/settings icons
-         on the logo. Clicks pass through to the reload link around it. */
+         on the logo. The link's click-catcher below keeps it clickable. */
       pointer-events: none;
     }
+    /* Invisible click-catcher owned by the reload link, laid exactly
+       over the logo — restores click-to-refresh without letting the
+       browser treat the image itself as hoverable. */
+    .hero a { position: relative; display: inline-block; }
+    .hero a::after { content: ""; position: absolute; inset: 0; cursor: pointer; }
     .hero h1 {
       font-size: 40px; line-height: 1.05; text-transform: uppercase;
       margin-top: 24px; letter-spacing: -0.5px;
