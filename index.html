@@ -57,7 +57,11 @@
       backdrop-filter: blur(8px);
       z-index: 10;
     }
-    header .brand { font-size: 15px; letter-spacing: 1px; text-transform: uppercase; }
+    header .brand {
+      font-size: 15px; letter-spacing: 1px; text-transform: uppercase;
+      /* It's a link now (click = reload) but keeps its plain look */
+      color: var(--white); text-decoration: none;
+    }
     header .brand span { color: var(--red); }
     header .call {
       font-size: 13px; text-decoration: none; color: var(--white);
@@ -325,7 +329,8 @@
 
   <!-- TOP BAR -->
   <header>
-    <div class="brand">Big<span>Dog</span></div>
+    <!-- Clicking the brand reloads the page (fresh start, back to top) -->
+    <a class="brand" href="./">Big<span>Dog</span></a>
     <div class="call-wrap" id="callWrap">
       <button class="call" type="button"
               onclick="document.getElementById('callWrap').classList.toggle('open')">
