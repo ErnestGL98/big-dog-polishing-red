@@ -92,9 +92,18 @@
       padding: 10px 16px;
       white-space: nowrap;
       font-size: 20px; letter-spacing: 1px;
-      /* STAINLESS STEEL text: metal gradient clipped to the glyphs */
-      background-image: linear-gradient(180deg,
-        #f2f4f6 0%, #c9ced4 35%, #878e98 50%, #d6dade 62%, #aab0b8 100%);
+      /* STAINLESS STEEL text: metal gradient clipped to the glyphs.
+         Layer 1 is the light beam (parked off to the left), layer 2
+         is the steel. Both live INSIDE the text, so the flash only
+         ever crosses the digits — never the plate. */
+      background-image:
+        linear-gradient(105deg,
+          transparent 38%, rgba(255,255,255,0.95) 50%, transparent 62%),
+        linear-gradient(180deg,
+          #f2f4f6 0%, #c9ced4 35%, #878e98 50%, #d6dade 62%, #aab0b8 100%);
+      background-size: 250% 100%, 100% 100%;
+      background-position: -160% 0, 0 0;   /* beam waits offstage */
+      background-repeat: no-repeat;
       -webkit-background-clip: text; background-clip: text;
       color: transparent;
       background-color: var(--charcoal-2);
@@ -103,10 +112,8 @@
       position: relative; overflow: hidden;
       transform: translateY(-115%);
     }
-    /* THE HEAVY DROP: fast fall, hard landing, tiny settle thud */
-    .call-wrap.open .call-plate {
-      animation: plate-drop .5s cubic-bezier(.55, 0, 1, .45) forwards;
-    }
+    /* THE HEAVY DROP: fast fall, hard landing, tiny settle thud
+       (triggered together with the beam in the rule further down) */
     @keyframes plate-drop {
       0%   { transform: translateY(-115%); }
       62%  { transform: translateY(0); }        /* slams down */
@@ -114,29 +121,21 @@
       86%  { transform: translateY(-1px); }     /* barely rebounds — it's HEAVY */
       100% { transform: translateY(0); }
     }
-    /* THE LIGHT BEAM: one streak straight across after it settles */
-    .call-plate::after {
-      content: "";
-      position: absolute; top: 0; bottom: 0;
-      width: 45%; left: 0;
-      background: linear-gradient(105deg,
-        transparent 0%, rgba(255,255,255,0.05) 30%,
-        rgba(255,255,255,0.85) 50%,
-        rgba(255,255,255,0.05) 70%, transparent 100%);
-      transform: translateX(-130%) skewX(-12deg);
-      opacity: 0;
-    }
-    .call-wrap.open .call-plate::after {
-      animation: beam-flash .45s ease-out .55s 1 forwards; /* waits for the drop */
+    /* THE LIGHT BEAM: one streak straight across the DIGITS ONLY,
+       after the plate settles. It slides the beam layer of the
+       text gradient from off-left to off-right, then it's gone. */
+    .call-wrap.open .call-plate {
+      animation:
+        plate-drop .5s cubic-bezier(.55, 0, 1, .45) forwards,
+        beam-flash .45s ease-out .55s 1 forwards;   /* waits for the drop */
     }
     @keyframes beam-flash {
-      0%   { transform: translateX(-130%) skewX(-12deg); opacity: 1; }
-      100% { transform: translateX(320%)  skewX(-12deg); opacity: 0; }
+      0%   { background-position: -160% 0, 0 0; }
+      100% { background-position:  160% 0, 0 0; }
     }
     /* Reduced-motion visitors: number just appears, no theatrics */
     @media (prefers-reduced-motion: reduce) {
       .call-wrap.open .call-plate { animation: none; transform: translateY(0); }
-      .call-wrap.open .call-plate::after { animation: none; }
     }
 
     /* ---- HERO (the big first screen) -------------------------- */
