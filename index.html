@@ -62,6 +62,79 @@
     header .call {
       font-size: 13px; text-decoration: none; color: var(--white);
       border: 1px solid var(--steel); padding: 8px 14px; border-radius: 999px;
+      background: transparent; font-family: inherit; cursor: pointer;
+    }
+
+    /* ---- PHONE NUMBER DROP-PLATE -------------------------------
+       Clicking "Call Now" drops the number down from behind the
+       button like a heavy steel plate, then a beam of light
+       flashes across it once. Click again to tuck it away. */
+    .call-wrap { position: relative; }
+    /* This window below the button clips the plate, so it looks
+       like it slides out from BEHIND the button, not from thin air */
+    .call-slot {
+      position: absolute; top: calc(100% + 6px); right: 0;
+      overflow: hidden;
+      padding: 0 6px 22px;   /* room for the landing shadow */
+      margin: 0 -6px;
+      pointer-events: none;   /* nothing clickable until dropped */
+      display: none;
+    }
+    .call-wrap.open .call-slot { display: block; pointer-events: auto; }
+
+    .call-plate {
+      display: block; text-decoration: none;
+      background: var(--charcoal-2);
+      border: 1px solid var(--steel);
+      border-radius: 10px;
+      padding: 10px 16px;
+      white-space: nowrap;
+      font-size: 16px; letter-spacing: 1px;
+      /* STAINLESS STEEL text: metal gradient clipped to the glyphs */
+      background-image: linear-gradient(180deg,
+        #f2f4f6 0%, #c9ced4 35%, #878e98 50%, #d6dade 62%, #aab0b8 100%);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      background-color: var(--charcoal-2);
+      /* fallback for the plate itself */
+      box-shadow: 0 14px 22px rgba(0,0,0,0.55);
+      position: relative; overflow: hidden;
+      transform: translateY(-115%);
+    }
+    /* THE HEAVY DROP: fast fall, hard landing, tiny settle thud */
+    .call-wrap.open .call-plate {
+      animation: plate-drop .5s cubic-bezier(.55, 0, 1, .45) forwards;
+    }
+    @keyframes plate-drop {
+      0%   { transform: translateY(-115%); }
+      62%  { transform: translateY(0); }        /* slams down */
+      74%  { transform: translateY(3px); }      /* ...thud */
+      86%  { transform: translateY(-1px); }     /* barely rebounds — it's HEAVY */
+      100% { transform: translateY(0); }
+    }
+    /* THE LIGHT BEAM: one streak straight across after it settles */
+    .call-plate::after {
+      content: "";
+      position: absolute; top: 0; bottom: 0;
+      width: 45%; left: 0;
+      background: linear-gradient(105deg,
+        transparent 0%, rgba(255,255,255,0.05) 30%,
+        rgba(255,255,255,0.85) 50%,
+        rgba(255,255,255,0.05) 70%, transparent 100%);
+      transform: translateX(-130%) skewX(-12deg);
+      opacity: 0;
+    }
+    .call-wrap.open .call-plate::after {
+      animation: beam-flash .45s ease-out .55s 1 forwards; /* waits for the drop */
+    }
+    @keyframes beam-flash {
+      0%   { transform: translateX(-130%) skewX(-12deg); opacity: 1; }
+      100% { transform: translateX(320%)  skewX(-12deg); opacity: 0; }
+    }
+    /* Reduced-motion visitors: number just appears, no theatrics */
+    @media (prefers-reduced-motion: reduce) {
+      .call-wrap.open .call-plate { animation: none; transform: translateY(0); }
+      .call-wrap.open .call-plate::after { animation: none; }
     }
 
     /* ---- HERO (the big first screen) -------------------------- */
@@ -252,7 +325,16 @@
   <!-- TOP BAR -->
   <header>
     <div class="brand">Big<span>Dog</span></div>
-    <a class="call" href="tel:0000000000">Call Now</a>
+    <div class="call-wrap" id="callWrap">
+      <button class="call" type="button"
+              onclick="document.getElementById('callWrap').classList.toggle('open')">
+        Call Now
+      </button>
+      <!-- The steel plate that drops down; tapping it dials -->
+      <div class="call-slot">
+        <a class="call-plate" href="tel:+18138380327">+1 (813) 838-0327</a>
+      </div>
+    </div>
   </header>
 
   <!-- HERO -->
@@ -305,7 +387,8 @@
   <!-- FOOTER -->
   <footer>
     <strong>Big Dog Polishing</strong><br />
-    Serving drivers &amp; fleets everywhere.<br /><br />
+    Serving drivers &amp; fleets everywhere.<br />
+    <a href="tel:+18138380327" style="color: var(--white); text-decoration: none;">+1 (813) 838-0327</a><br /><br />
     &copy; 2026 Big Dog Polishing
   </footer>
 
