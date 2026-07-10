@@ -73,7 +73,9 @@
     /* This window below the button clips the plate, so it looks
        like it slides out from BEHIND the button, not from thin air */
     .call-slot {
-      position: absolute; top: calc(100% + 6px); right: 0;
+      /* Rests just below the header's bottom line (button bottom +
+         header padding + border + a small breath of space) */
+      position: absolute; top: calc(100% + 26px); right: 0;
       overflow: hidden;
       padding: 0 6px 22px;   /* room for the landing shadow */
       margin: 0 -6px;
