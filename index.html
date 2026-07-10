@@ -147,6 +147,9 @@
     .hero img {
       width: 220px; height: auto;
       filter: drop-shadow(0 10px 30px rgba(216,31,38,0.35));
+      /* Stops browsers (Edge) overlaying visual-search/settings icons
+         on the logo. Clicks pass through to the reload link around it. */
+      pointer-events: none;
     }
     .hero h1 {
       font-size: 40px; line-height: 1.05; text-transform: uppercase;
