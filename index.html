@@ -90,12 +90,12 @@
 
     .call-plate {
       display: block; text-decoration: none;
-      background: var(--charcoal-2);
-      border: 1px solid var(--steel);
-      border-radius: 10px;
-      padding: 10px 16px;
+      padding: 4px 2px 8px;   /* small breathing room for the shadow */
       white-space: nowrap;
       font-size: 20px; letter-spacing: 1px;
+      /* No box anymore — each digit casts its own shadow, like
+         solid steel numerals hanging in the air */
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,0.65));
       /* STAINLESS STEEL text: metal gradient clipped to the glyphs.
          Layer 1 is the light beam (parked off to the left), layer 2
          is the steel. Both live INSIDE the text, so the flash only
@@ -110,10 +110,7 @@
       background-repeat: no-repeat;
       -webkit-background-clip: text; background-clip: text;
       color: transparent;
-      background-color: var(--charcoal-2);
-      /* fallback for the plate itself */
-      box-shadow: 0 14px 22px rgba(0,0,0,0.55);
-      position: relative; overflow: hidden;
+      position: relative;
       transform: translateY(-115%);
     }
     /* THE HEAVY DROP: fast fall, hard landing, tiny settle thud
