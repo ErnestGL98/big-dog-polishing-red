@@ -449,7 +449,7 @@
     <p>Mirror-finish metal polishing for big rigs — and anything else that needs to shine.</p>
     <div class="accent"></div>
     <a class="btn btn-primary" href="#contact">Get a Free Quote</a>
-    <a class="btn btn-ghost" href="#gallery">See What We Do</a>
+    <a class="btn btn-ghost" href="#gallery" id="seeWhatWeDo">See What We Do</a>
   </div>
 
   <!-- SERVICES -->
@@ -545,6 +545,17 @@
   </div>
 
   <script>
+    // ---- "SEE WHAT WE DO" LANDING ---------------------------
+    // Instead of putting the gallery at the TOP of the screen,
+    // glide so it rests at the BOTTOM — services visible above,
+    // gallery rolling underneath, all in one view.
+    document.getElementById("seeWhatWeDo").addEventListener("click", (e) => {
+      e.preventDefault();
+      document.getElementById("gallery")
+        .scrollIntoView({ behavior: "smooth", block: "end" });
+      history.pushState(null, "", "#gallery");   // keep the web address tidy
+    });
+
     // ---- GALLERY LIGHTBOX -----------------------------------
     // Click a gallery item -> show it full scale. Scroll zooms,
     // Esc / X / clicking the dark backdrop closes.
