@@ -319,6 +319,12 @@
       width: 100%; margin-top: 2px; cursor: pointer;
       font-family: inherit;
     }
+    /* "Message sent" / error line under the Send button */
+    .form-status {
+      font-family: "Segoe UI", sans-serif; font-weight: 600;
+      font-size: 15px; text-align: center; margin-top: 14px;
+      color: var(--white); min-height: 1em;
+    }
 
     /* ---- FOOTER ----------------------------------------------- */
     footer {
@@ -387,12 +393,18 @@
       <h2>Let's Make It Shine</h2>
       <p>Get a free, no-pressure quote today.</p>
 
-      <!-- Contact form. onsubmit="return false" just stops the page
-           from reloading — it's not wired to actually send yet. -->
-      <form class="contact-form" onsubmit="return false;">
-        <input type="email" placeholder="Your email" aria-label="Your email" />
-        <textarea placeholder="Tell us what you need polished..." aria-label="Your message"></textarea>
+      <!-- Contact form — wired to Formspree, which forwards each
+           message to the business inbox. The script at the bottom
+           of the page sends it without leaving this page. -->
+      <form class="contact-form" id="contactForm"
+            action="https://formspree.io/f/mqerqpvg" method="POST">
+        <input type="email" name="email" required
+               placeholder="Your email" aria-label="Your email" />
+        <textarea name="message" required
+                  placeholder="Tell us what you need polished..." aria-label="Your message"></textarea>
         <button type="submit" class="btn btn-ghost btn-send">Send</button>
+        <!-- Success / error message appears here after sending -->
+        <p class="form-status" id="formStatus" role="status"></p>
       </form>
     </div>
   </section>
@@ -404,6 +416,41 @@
     <a href="tel:+18138380327" style="color: var(--white); text-decoration: none;">+1 (813) 838-0327</a><br /><br />
     &copy; 2026 Big Dog Polishing
   </footer>
+
+  <script>
+    // Sends the contact form to Formspree without leaving the page.
+    // On success the form is replaced by a thank-you line; on failure
+    // the visitor is told to try again or call instead.
+    const form = document.getElementById("contactForm");
+    const status = document.getElementById("formStatus");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();                    // stop the normal page reload
+      const button = form.querySelector(".btn-send");
+      button.disabled = true;
+      button.textContent = "Sending...";
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { "Accept": "application/json" }
+        });
+        if (response.ok) {
+          form.reset();
+          status.textContent = "Message sent! We'll get back to you soon. 👍";
+          button.textContent = "Send";
+        } else {
+          status.textContent = "Something went wrong — please try again, or call us instead.";
+          button.textContent = "Send";
+        }
+      } catch (error) {
+        status.textContent = "Couldn't reach the server — check your connection and try again.";
+        button.textContent = "Send";
+      }
+      button.disabled = false;
+    });
+  </script>
 
 </body>
 </html>
