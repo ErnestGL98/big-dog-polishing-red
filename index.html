@@ -336,19 +336,24 @@
       background: rgba(10, 11, 13, 0.95);
     }
     .lightbox.open { display: flex; }
-    .lightbox img, .lightbox video {
-      max-width: 92vw; max-height: 86vh;
-      border-radius: 8px;
-      /* pan (drag) first, then zoom */
+    /* The media rides inside a wrapper; pan/zoom move the wrapper.
+       A transparent "shield" covers the media so the browser (Edge)
+       never treats it as a hoverable image — no overlay icons —
+       while the shield hands all drag gestures to us. */
+    .lb-wrap {
+      position: relative;
       transform: translate(var(--panx, 0px), var(--pany, 0px)) scale(var(--zoom, 1));
       transition: transform .12s ease-out;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
       cursor: grab;
     }
-    /* While actively dragging: no easing lag, grabbing-hand cursor */
-    .lightbox img.dragging, .lightbox video.dragging {
-      transition: none; cursor: grabbing;
+    .lb-wrap.dragging { transition: none; cursor: grabbing; }
+    .lb-wrap img, .lb-wrap video {
+      max-width: 92vw; max-height: 86vh;
+      border-radius: 8px; display: block;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      pointer-events: none;    /* shield below handles the mouse */
     }
+    .lb-shield { position: absolute; inset: 0; }
     /* Top bar: controls hint on the left, close button on the right */
     .lb-bar {
       position: absolute; top: 0; left: 0; right: 0;
@@ -545,16 +550,17 @@
     // Esc / X / clicking the dark backdrop closes.
     const lightbox = document.getElementById("lightbox");
     const lbClose = document.getElementById("lbClose");
+    let lbWrap = null;    // wrapper that pans/zooms (media + shield inside)
     let lbMedia = null;   // the enlarged img/video currently shown
     let zoom = 1;
     let panX = 0, panY = 0;          // drag offset in pixels
     let dragging = false, dragStartX = 0, dragStartY = 0;
 
     function applyTransform() {
-      if (!lbMedia) return;
-      lbMedia.style.setProperty("--zoom", zoom);
-      lbMedia.style.setProperty("--panx", panX + "px");
-      lbMedia.style.setProperty("--pany", panY + "px");
+      if (!lbWrap) return;
+      lbWrap.style.setProperty("--zoom", zoom);
+      lbWrap.style.setProperty("--panx", panX + "px");
+      lbWrap.style.setProperty("--pany", panY + "px");
     }
 
     function openLightbox(source) {
@@ -569,37 +575,46 @@
         lbMedia.src = source.getAttribute("src");
         lbMedia.alt = source.getAttribute("alt") || "";
       }
+      // Wrapper carries the pan/zoom; shield sits over the media so
+      // the browser never offers image-hover icons on it
+      lbWrap = document.createElement("div");
+      lbWrap.className = "lb-wrap";
+      const shield = document.createElement("div");
+      shield.className = "lb-shield";
+      lbWrap.appendChild(lbMedia);
+      lbWrap.appendChild(shield);
+
       zoom = 1; panX = 0; panY = 0;
       applyTransform();
 
       // Click-and-drag panning (pointer events cover mouse AND touch)
-      lbMedia.addEventListener("pointerdown", (e) => {
+      lbWrap.addEventListener("pointerdown", (e) => {
         e.preventDefault();                     // stops the browser's own image-drag
         dragging = true;
         dragStartX = e.clientX - panX;
         dragStartY = e.clientY - panY;
-        lbMedia.classList.add("dragging");
-        lbMedia.setPointerCapture(e.pointerId); // keep receiving moves outside the media
+        lbWrap.classList.add("dragging");
+        lbWrap.setPointerCapture(e.pointerId);  // keep receiving moves outside the media
       });
-      lbMedia.addEventListener("pointermove", (e) => {
+      lbWrap.addEventListener("pointermove", (e) => {
         if (!dragging) return;
         panX = e.clientX - dragStartX;
         panY = e.clientY - dragStartY;
         applyTransform();
       });
-      lbMedia.addEventListener("pointerup", () => {
+      lbWrap.addEventListener("pointerup", () => {
         dragging = false;
-        lbMedia.classList.remove("dragging");
+        lbWrap.classList.remove("dragging");
       });
 
-      lightbox.appendChild(lbMedia);
+      lightbox.appendChild(lbWrap);
       lightbox.classList.add("open");
       document.body.style.overflow = "hidden";   // stop page scrolling behind it
     }
 
     function closeLightbox() {
       lightbox.classList.remove("open");
-      if (lbMedia) { lbMedia.remove(); lbMedia = null; }
+      if (lbWrap) { lbWrap.remove(); lbWrap = null; lbMedia = null; }
       document.body.style.overflow = "";
     }
 
