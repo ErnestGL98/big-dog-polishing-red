@@ -309,6 +309,10 @@
     .gallery-item img,
     .gallery-item video {
       width: 100%; height: 100%; object-fit: cover; display: block;
+      /* Keeps browsers (Edge) from overlaying visual-search icons.
+         Clicks fall through to the .gallery-item frame, which is
+         what opens the lightbox — so click-to-enlarge still works. */
+      pointer-events: none;
     }
     /* Placeholder look until real photos are dropped in */
     .gallery-item.placeholder {
