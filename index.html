@@ -30,7 +30,7 @@
        instead of instantly snapping to it. */
     html { scroll-behavior: smooth; }
     /* Keeps the sticky top bar from covering the section we land on */
-    #services, #contact { scroll-margin-top: 72px; }
+    #services, #gallery, #contact { scroll-margin-top: 72px; }
     /* Respect visitors who prefer reduced motion */
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -284,6 +284,43 @@
     .card h3 { font-size: 18px; text-transform: uppercase; margin-bottom: 6px; }
     .card p  { color: var(--steel); font-family: "Segoe UI", sans-serif; font-weight: 400; font-size: 14px; }
 
+    /* ---- GALLERY (auto-gliding film strip) --------------------
+       A conveyor of work photos drifting across the screen just
+       below the service cards. Pauses while hovered. The track
+       holds TWO copies of the photo set — when the first copy has
+       fully scrolled past, the loop restarts invisibly. */
+    .gallery { padding: 30px 0 0; }
+    .gallery-strip { overflow: hidden; width: 100%; }
+    .gallery-track {
+      display: flex; gap: 14px; width: max-content;
+      animation: gallery-glide 35s linear infinite;
+    }
+    .gallery-strip:hover .gallery-track { animation-play-state: paused; }
+    @keyframes gallery-glide {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }  /* one full copy's width */
+    }
+    .gallery-item {
+      width: 280px; height: 180px; flex-shrink: 0;
+      border-radius: 12px; overflow: hidden;
+      background: var(--charcoal-2);
+      border: 1px solid rgba(138,144,153,0.25);
+    }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    /* Placeholder look until real photos are dropped in */
+    .gallery-item.placeholder {
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 8px;
+      color: var(--steel); font-family: "Segoe UI", sans-serif;
+      font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .gallery-item.placeholder::before { content: "🚛✨"; font-size: 28px; }
+    @media (prefers-reduced-motion: reduce) {
+      .gallery-track { animation: none; }
+    }
+
     /* ---- CALL-TO-ACTION STRIP --------------------------------- */
     .cta { background: var(--red); text-align: center; }
     .cta h2 { color: var(--white); }
@@ -364,7 +401,7 @@
     <p>Mirror-finish metal polishing for big rigs — and anything else that needs to shine.</p>
     <div class="accent"></div>
     <a class="btn btn-primary" href="#contact">Get a Free Quote</a>
-    <a class="btn btn-ghost" href="#services">See What We Do</a>
+    <a class="btn btn-ghost" href="#gallery">See What We Do</a>
   </div>
 
   <!-- SERVICES -->
@@ -383,6 +420,30 @@
     <div class="card">
       <h3>Custom Jobs</h3>
       <p>If it's metal and it needs to shine, we polish it. Just ask.</p>
+    </div>
+  </section>
+
+  <!-- GALLERY: auto-gliding strip of work photos. To add a real
+       photo, replace a placeholder div with:
+         <div class="gallery-item"><img src="images/gallery/photo1.jpg" alt="Polished rig" /></div>
+       ...and make the SAME change in both copies of the set below
+       so the loop stays seamless. -->
+  <section id="gallery" class="gallery">
+    <div class="gallery-strip">
+      <div class="gallery-track">
+        <!-- Copy 1 of the photo set -->
+        <div class="gallery-item placeholder">Your shine here</div>
+        <div class="gallery-item placeholder">Your shine here</div>
+        <div class="gallery-item placeholder">Your shine here</div>
+        <div class="gallery-item placeholder">Your shine here</div>
+        <div class="gallery-item placeholder">Your shine here</div>
+        <!-- Copy 2 — must match Copy 1 exactly (makes the loop seamless) -->
+        <div class="gallery-item placeholder">Your shine here</div>
+        <div class="gallery-item placeholder">Your shine here</div>
+        <div class="gallery-item placeholder">Your shine here</div>
+        <div class="gallery-item placeholder">Your shine here</div>
+        <div class="gallery-item placeholder">Your shine here</div>
+      </div>
     </div>
   </section>
 
