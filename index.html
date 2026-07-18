@@ -340,6 +340,9 @@
       position: fixed; inset: 0; z-index: 100;
       display: none; align-items: center; justify-content: center;
       background: rgba(10, 11, 13, 0.95);
+      /* All touches belong to the lightbox — stops pinch/drag from
+         zooming or scrolling the page behind it on phones */
+      touch-action: none;
     }
     .lightbox.open { display: flex; }
     /* The media rides inside a wrapper; pan/zoom move the wrapper.
@@ -351,6 +354,7 @@
       transform: translate(var(--panx, 0px), var(--pany, 0px)) scale(var(--zoom, 1));
       transition: transform .12s ease-out;
       cursor: grab;
+      touch-action: none;
     }
     .lb-wrap.dragging { transition: none; cursor: grabbing; }
     .lb-wrap img, .lb-wrap video {
@@ -546,7 +550,7 @@
   <!-- LIGHTBOX overlay — hidden until a gallery item is clicked -->
   <div class="lightbox" id="lightbox">
     <div class="lb-bar">
-      <span>Scroll to zoom &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Esc to close</span>
+      <span>Scroll or pinch to zoom &nbsp;&middot;&nbsp; Drag to pan &nbsp;&middot;&nbsp; Esc or &#10005; to close</span>
       <button class="lb-close" id="lbClose" aria-label="Close full view">&#10005;</button>
     </div>
   </div>
@@ -582,6 +586,9 @@
     }
 
     function openLightbox(source) {
+      // If a view is already open, clear it first so images
+      // can never stack on top of each other
+      if (lbWrap) closeLightbox();
       // Build a fresh full-size copy of what was clicked
       if (source.tagName === "VIDEO") {
         lbMedia = document.createElement("video");
@@ -605,25 +612,57 @@
       zoom = 1; panX = 0; panY = 0;
       applyTransform();
 
-      // Click-and-drag panning (pointer events cover mouse AND touch)
+      // Drag + pinch controls. One finger (or the mouse) drags to
+      // pan; two fingers pinch to zoom — phones have no scroll wheel.
+      const pointers = new Map();               // fingers currently down
+      let pinchStartDist = 0, pinchStartZoom = 1;
+
       lbWrap.addEventListener("pointerdown", (e) => {
         e.preventDefault();                     // stops the browser's own image-drag
-        dragging = true;
-        dragStartX = e.clientX - panX;
-        dragStartY = e.clientY - panY;
-        lbWrap.classList.add("dragging");
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
         lbWrap.setPointerCapture(e.pointerId);  // keep receiving moves outside the media
+        if (pointers.size === 1) {
+          dragging = true;
+          dragStartX = e.clientX - panX;
+          dragStartY = e.clientY - panY;
+          lbWrap.classList.add("dragging");
+        } else if (pointers.size === 2) {
+          dragging = false;                     // second finger = pinch mode
+          const [a, b] = [...pointers.values()];
+          pinchStartDist = Math.hypot(a.x - b.x, a.y - b.y);
+          pinchStartZoom = zoom;
+        }
       });
       lbWrap.addEventListener("pointermove", (e) => {
-        if (!dragging) return;
-        panX = e.clientX - dragStartX;
-        panY = e.clientY - dragStartY;
-        applyTransform();
+        if (!pointers.has(e.pointerId)) return;
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pointers.size === 2) {
+          // Zoom by how much the two fingers spread or squeeze
+          const [a, b] = [...pointers.values()];
+          const dist = Math.hypot(a.x - b.x, a.y - b.y);
+          zoom = Math.min(Math.max(pinchStartZoom * (dist / pinchStartDist), 0.4), 6);
+          applyTransform();
+        } else if (dragging) {
+          panX = e.clientX - dragStartX;
+          panY = e.clientY - dragStartY;
+          applyTransform();
+        }
       });
-      lbWrap.addEventListener("pointerup", () => {
-        dragging = false;
-        lbWrap.classList.remove("dragging");
-      });
+      const liftPointer = (e) => {
+        pointers.delete(e.pointerId);
+        if (pointers.size === 0) {
+          dragging = false;
+          lbWrap.classList.remove("dragging");
+        } else if (pointers.size === 1) {
+          // Went from pinching back to one finger: restart the drag
+          const [p] = [...pointers.values()];
+          dragging = true;
+          dragStartX = p.x - panX;
+          dragStartY = p.y - panY;
+        }
+      };
+      lbWrap.addEventListener("pointerup", liftPointer);
+      lbWrap.addEventListener("pointercancel", liftPointer);
 
       lightbox.appendChild(lbWrap);
       lightbox.classList.add("open");
