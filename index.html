@@ -318,9 +318,41 @@
       font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
     }
     .gallery-item.placeholder::before { content: "🚛✨"; font-size: 28px; }
+    .gallery-item { cursor: zoom-in; }
     @media (prefers-reduced-motion: reduce) {
       .gallery-track { animation: none; }
     }
+
+    /* ---- LIGHTBOX (click a gallery item to view full scale) ----
+       Dark full-screen overlay. Scroll wheel zooms the media,
+       Esc / the X / clicking the backdrop closes it. */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 100;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(10, 11, 13, 0.95);
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img, .lightbox video {
+      max-width: 92vw; max-height: 86vh;
+      border-radius: 8px;
+      transform: scale(var(--zoom, 1));
+      transition: transform .12s ease-out;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    }
+    /* Top bar: controls hint on the left, close button on the right */
+    .lb-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      font-family: "Segoe UI", sans-serif; font-size: 13px;
+      color: var(--steel); letter-spacing: 1px; text-transform: uppercase;
+    }
+    .lb-close {
+      background: none; border: 1px solid var(--steel); color: var(--white);
+      border-radius: 999px; width: 38px; height: 38px;
+      font-size: 18px; line-height: 1; cursor: pointer;
+    }
+    .lb-close:hover { border-color: var(--red); color: var(--red); }
 
     /* ---- CALL-TO-ACTION STRIP --------------------------------- */
     .cta { background: var(--red); text-align: center; }
@@ -489,7 +521,72 @@
     &copy; 2026 Big Dog Polishing
   </footer>
 
+  <!-- LIGHTBOX overlay — hidden until a gallery item is clicked -->
+  <div class="lightbox" id="lightbox">
+    <div class="lb-bar">
+      <span>Scroll to zoom &nbsp;&middot;&nbsp; Esc to close</span>
+      <button class="lb-close" id="lbClose" aria-label="Close full view">&#10005;</button>
+    </div>
+  </div>
+
   <script>
+    // ---- GALLERY LIGHTBOX -----------------------------------
+    // Click a gallery item -> show it full scale. Scroll zooms,
+    // Esc / X / clicking the dark backdrop closes.
+    const lightbox = document.getElementById("lightbox");
+    const lbClose = document.getElementById("lbClose");
+    let lbMedia = null;   // the enlarged img/video currently shown
+    let zoom = 1;
+
+    function openLightbox(source) {
+      // Build a fresh full-size copy of what was clicked
+      if (source.tagName === "VIDEO") {
+        lbMedia = document.createElement("video");
+        lbMedia.src = source.getAttribute("src");
+        lbMedia.autoplay = true; lbMedia.muted = true;
+        lbMedia.loop = true; lbMedia.playsInline = true;
+      } else {
+        lbMedia = document.createElement("img");
+        lbMedia.src = source.getAttribute("src");
+        lbMedia.alt = source.getAttribute("alt") || "";
+      }
+      zoom = 1;
+      lightbox.appendChild(lbMedia);
+      lightbox.classList.add("open");
+      document.body.style.overflow = "hidden";   // stop page scrolling behind it
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove("open");
+      if (lbMedia) { lbMedia.remove(); lbMedia = null; }
+      document.body.style.overflow = "";
+    }
+
+    // Every gallery frame (both copies of the set) opens the lightbox
+    document.querySelectorAll(".gallery-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const media = item.querySelector("img, video");
+        if (media) openLightbox(media);
+      });
+    });
+
+    // Scroll wheel = zoom in/out (only while the lightbox is open)
+    lightbox.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      zoom = e.deltaY < 0 ? zoom * 1.12 : zoom / 1.12;
+      zoom = Math.min(Math.max(zoom, 0.4), 6);   // keep it sane
+      if (lbMedia) lbMedia.style.setProperty("--zoom", zoom);
+    }, { passive: false });
+
+    // The three ways out: Esc, the X, or clicking the dark backdrop
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && lightbox.classList.contains("open")) closeLightbox();
+    });
+    lbClose.addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
     // Sends the contact form to Formspree without leaving the page.
     // On success the form is replaced by a thank-you line; on failure
     // the visitor is told to try again or call instead.
